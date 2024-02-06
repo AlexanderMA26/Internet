@@ -5,7 +5,7 @@ import java.awt.event.KeyListener;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.util.ArrayList;
+import java.util.Objects;
 
 
 public class Interface {
@@ -13,7 +13,7 @@ public class Interface {
 
     public TextArea results = new TextArea("Links\n");
     public TextField url = new TextField("Enter url here");
-    public TextField link = new TextField("Search keyword here");
+    public TextField link = new TextField("Enter search");
 
 
 
@@ -35,19 +35,18 @@ public class Interface {
         searches.setLayout(new GridLayout(1, 2));
         results.setEditable(false);
 
-
-
-
         searches.add(url);
         searches.add(link);
 
         mainframe.add(searches, BorderLayout.NORTH);
         mainframe.add(results, BorderLayout.CENTER);
+
+
         url.addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
                 linkCheck();
-                System.out.println("Event triggered");
+                System.out.println("Event heard");
             }
 
             @Override
@@ -59,8 +58,28 @@ public class Interface {
             public void keyReleased(KeyEvent e) {
 
             }
-
         });
+
+        link.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                linkCheck();
+                System.out.println("Event Heard");
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+
+            }
+        });
+
+
+
 
         mainframe.setVisible(true);
 
@@ -71,24 +90,32 @@ public class Interface {
     }
 
     public void linkCheck(){
+        results.setText("");
         try {
             String userUrl = url.getText();
-            URL url = new URL(userUrl);
+            URL imputurl = new URL(userUrl);
 
             BufferedReader reader = new BufferedReader
-                    (new InputStreamReader(url.openStream()));
+                    (new InputStreamReader(imputurl.openStream()));
             String line;
 
             while ((line = reader.readLine()) != null) {
                 if (line.contains("http")) {
+
                     int start = line.indexOf("https");
 
                     int end = line.indexOf("\"", start);
 
+                    if (!Objects.equals(link.getText(), "Enter search") && line.contains(link.getText())) {
+                        System.out.println(line.substring(start, end));
+                        results.append(line.substring(start, end));
+                        results.append("\n");
+                    } else if (Objects.equals(link.getText(), "Enter search")) {
+                        System.out.println(line.substring(start, end));
+                        results.append(line.substring(start, end));
+                        results.append("\n");
+                    }
 
-                    System.out.println(line.substring(start, end));
-                    results.append(line.substring(start, end));
-                    results.append("\n\n");
                 }
             }
 
